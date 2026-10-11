@@ -30,5 +30,23 @@ pipeline {
                 )
             }
         }
+
+        stage('Test') {
+            steps {
+                bat '''
+                    docker run --rm ^
+                    -v "%CD%:/app" ^
+                    -w /app ^
+                    dh-mirror.gitverse.ru/python:3.13.7-alpine3.22 ^
+                    sh -c ". venv/bin/activate && pytest --junit-xml=test-reports/results.xml sources/test_calc.py"
+                '''
+            }
+
+            post {
+                always {
+                    junit 'test-reports/results.xml'
+                }
+            }
+        }
     }
 }
