@@ -1,17 +1,15 @@
 pipeline {
-    agent {
-        docker {
-            image 'dh-mirror.gitverse.ru/python:3.13.7-alpine3.22'
-        }
-    }
+    agent any
 
     stages {
         stage('Setup') {
             steps {
-                sh '''
-                    python -m venv venv
-                    . venv/bin/activate
-                    pip install -r requirements.txt
+                bat '''
+                    docker run --rm ^
+                    -v "%CD%:/app" ^
+                    -w /app ^
+                    dh-mirror.gitverse.ru/python:3.13.7-alpine3.22 ^
+                    sh -c "python -m venv venv && . venv/bin/activate && pip install -r requirements.txt"
                 '''
             }
         }
