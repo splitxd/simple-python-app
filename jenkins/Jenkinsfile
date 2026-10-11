@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipStagesAfterUnstable()
+    }
+
     stages {
         stage('Setup') {
             steps {
@@ -45,6 +49,18 @@ pipeline {
             post {
                 always {
                     junit 'test-reports/results.xml'
+                }
+            }
+        }
+
+        stage('Deliver') {
+            steps {
+                echo "Собираю дистрибутив"
+            }
+
+            post {
+                success {
+                    archiveArtifacts artifacts: '**/*.py'
                 }
             }
         }
