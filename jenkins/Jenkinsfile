@@ -13,5 +13,22 @@ pipeline {
                 '''
             }
         }
+
+        stage('Build') {
+            steps {
+                bat '''
+                    docker run --rm ^
+                    -v "%CD%:/app" ^
+                    -w /app ^
+                    dh-mirror.gitverse.ru/python:3.13.7-alpine3.22 ^
+                    sh -c ". venv/bin/activate && python -m py_compile sources/add2vals.py sources/calc.py"
+                '''
+
+                stash(
+                    name: 'compiled-results',
+                    includes: 'sources/*.py*'
+                )
+            }
+        }
     }
 }
